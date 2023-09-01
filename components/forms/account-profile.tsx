@@ -19,8 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { useUploadThing } from "@/lib/uploadthing";
-import { isBase64Image } from "@/lib/utils";
+import ImageUpload from "../image-upload";
 
 interface Props {
   data: {
@@ -40,9 +39,7 @@ const schema = z.object({
 });
 
 export default function AccountProfile({ data }: Props) {
-  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { startUpload } = useUploadThing("imageUploader");
   const router = useRouter();
 
   const form = useForm<z.infer<typeof schema>>({
@@ -55,41 +52,7 @@ export default function AccountProfile({ data }: Props) {
     },
   });
 
-  const handleImage = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
-  ) => {
-    e.preventDefault();
-
-    const fileReader = new FileReader();
-
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-
-      setFiles(Array.from(e.target.files));
-
-      if (!file.type.includes("image")) return;
-
-      fileReader.onload = (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
-
-        fieldChange(imageDataUrl);
-      };
-
-      fileReader.readAsDataURL(file);
-    }
-  };
-
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    const blob = values.profileImage;
-    const isImageChanged = isBase64Image(blob);
-
-    if (isImageChanged) {
-      const upload = await startUpload(files);
-      if (upload && upload[0]?.url) {
-        values.profileImage = upload[0].url;
-      }
-    }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/user", {
@@ -121,7 +84,10 @@ export default function AccountProfile({ data }: Props) {
                 <FormLabel className="flex justify-center">
                   {field.value ? (
                     <Avatar className="h-20 w-20 rounded-full border">
-                      <AvatarImage src={field.value} />
+                      <AvatarImage
+                        src={field.value}
+                        className="object-cover object-center"
+                      />
                     </Avatar>
                   ) : (
                     <div className="flex justify-center items-center bg-gray-200 h-20 w-20 rounded-full border">
@@ -129,11 +95,9 @@ export default function AccountProfile({ data }: Props) {
                     </div>
                   )}
                 </FormLabel>
+                <Label>Profile Image</Label>
                 <FormControl>
-                  <Input
-                    type="file"
-                    onChange={(e) => handleImage(e, field.onChange)}
-                  />
+                  <ImageUpload onChange={(url) => field.onChange(url)} />
                 </FormControl>
               </FormItem>
             )}

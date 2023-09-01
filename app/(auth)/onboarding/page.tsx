@@ -1,6 +1,7 @@
 import AccountProfile from "@/components/forms/account-profile";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prismadb";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await getAuthSession();
@@ -18,6 +19,10 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     profileImage: userInfo?.profileImage || "",
   };
+
+  if (userInfo?.onboarded) {
+    redirect("/");
+  }
 
   return (
     <div>

@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Navbar />
-          <main className="max-w-xl mx-auto my-10 px-4 sm:px-0">
+          <main className="max-w-xl mx-auto mt-10 mb-20 px-4 sm:px-0">
             {children}
           </main>
           <Footer />

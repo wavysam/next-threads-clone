@@ -64,6 +64,9 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
+  pages: {
+    signIn: "/login",
+  },
 };
 
 export const getAuthSession = async () => await getServerSession(authOptions);

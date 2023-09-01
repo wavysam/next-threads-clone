@@ -1,13 +1,22 @@
 import Thread from "@/components/thread";
+import { prisma } from "@/lib/prismadb";
 
-export default function Home() {
+export default async function Home() {
+  const threads = await prisma.post.findMany({
+    include: {
+      user: true,
+      images: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div>
-      <Thread />
-      <Thread />
-      <Thread />
-      <Thread />
-      <Thread />
+      {threads.map((thread) => (
+        <Thread key={thread.id} data={thread} />
+      ))}
     </div>
   );
 }
