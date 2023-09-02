@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
@@ -14,6 +14,7 @@ interface Props {
 
 export default function ProfileButton({ sessionId, userId, data }: Props) {
   const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const follow = async () => {
@@ -62,11 +63,19 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
           </Button>
         </div>
       ) : data.followers?.includes(sessionId) ? (
-        <Button variant="outline" disabled={loading} onClick={unFollow}>
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={() => startTransition(unFollow)}
+        >
           Unfollow
         </Button>
       ) : (
-        <Button variant="outline" disabled={loading} onClick={follow}>
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={() => startTransition(follow)}
+        >
           Follow
         </Button>
       )}
