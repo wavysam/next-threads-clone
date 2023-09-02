@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
-import { useRouter } from "next/navigation";
 
 interface Props {
   sessionId: string;
@@ -11,9 +13,11 @@ interface Props {
 }
 
 export default function ProfileButton({ sessionId, userId, data }: Props) {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const follow = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`/api/user/follow/${userId}`, {
         method: "PATCH",
@@ -24,10 +28,13 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const unFollow = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`/api/user/unfollow/${userId}`, {
         method: "PATCH",
@@ -38,6 +45,8 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,11 +62,11 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
           </Button>
         </div>
       ) : data.followers?.includes(sessionId) ? (
-        <Button variant="outline" onClick={unFollow}>
+        <Button variant="outline" disabled={loading} onClick={unFollow}>
           Unfollow
         </Button>
       ) : (
-        <Button variant="outline" onClick={follow}>
+        <Button variant="outline" disabled={loading} onClick={follow}>
           Follow
         </Button>
       )}
