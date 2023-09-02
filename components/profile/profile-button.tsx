@@ -26,6 +26,21 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
       console.log(error);
     }
   };
+
+  const unFollow = async () => {
+    try {
+      const res = await fetch(`/api/user/unfollow/${userId}`, {
+        method: "PATCH",
+      });
+
+      if (res.ok) {
+        router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="my-8">
       {sessionId === userId ? (
@@ -38,7 +53,9 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
           </Button>
         </div>
       ) : data.followers?.includes(sessionId) ? (
-        <Button variant="outline">Unfollow</Button>
+        <Button variant="outline" onClick={unFollow}>
+          Unfollow
+        </Button>
       ) : (
         <Button variant="outline" onClick={follow}>
           Follow
