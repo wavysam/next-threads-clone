@@ -1,9 +1,11 @@
+import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prismadb";
 
-export const getUserInfo = async (id: string) => {
+export const getUserInfo = async () => {
+  const session = await getAuthSession();
   const user = await prisma.user.findUnique({
     where: {
-      id,
+      id: session?.user.id,
     },
   });
 

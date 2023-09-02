@@ -4,9 +4,10 @@ import { Post } from "@/types";
 
 interface Props {
   userThreads: Post[];
+  sessionId: string;
 }
 
-export default function ProfileTabs({ userThreads }: Props) {
+export default function ProfileTabs({ userThreads, sessionId }: Props) {
   return (
     <div>
       <Tabs defaultValue="threads">
@@ -32,7 +33,7 @@ export default function ProfileTabs({ userThreads }: Props) {
               </p>
             )}
             {userThreads.map((thread) => (
-              <Thread key={thread.id} data={thread} />
+              <Thread key={thread.id} data={thread} sessionId={sessionId} />
             ))}
           </div>
         </TabsContent>

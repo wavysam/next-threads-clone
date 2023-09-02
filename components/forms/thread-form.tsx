@@ -10,9 +10,12 @@ import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import ThreadImageUpload from "../thread-image-upload";
+import { useRouter } from "next/navigation";
+import { Post } from "@/types";
 
 interface Props {
-  data: User;
+  data: User | null;
+  initialData?: Post | null;
 }
 
 const schema = z.object({
@@ -20,27 +23,46 @@ const schema = z.object({
   images: z.object({ url: z.string() }).array(),
 });
 
-export default function ThreadForm({ data }: Props) {
+export default function ThreadForm({ data, initialData }: Props) {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      thread: "",
-      images: [],
+      thread: initialData?.thread || "",
+      images: initialData?.images || [],
     },
   });
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    try {
-      const res = await fetch("/api/thread", {
-        method: "POST",
-        body: JSON.stringify(values),
-      });
+    if (initialData) {
+      try {
+        const res = await fetch(`/api/thread/${initialData.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(values),
+        });
 
-      // if (res.ok) {
-      //   console.log(await res.json);
-      // }
-    } catch (error) {
-      console.log(error);
+        if (res.ok) {
+          router.push("/");
+          router.refresh();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const res = await fetch("/api/thread", {
+          method: "POST",
+          body: JSON.stringify(values),
+        });
+
+        if (res.ok) {
+          router.push("/");
+          router.refresh();
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -48,11 +70,14 @@ export default function ThreadForm({ data }: Props) {
     <div>
       <div className="flex items-start space-x-2">
         <Avatar>
-          <AvatarImage src={data.profileImage as string} />
+          <AvatarImage
+            src={data?.profileImage as string}
+            className="object-cover object-center"
+          />
           <AvatarFallback />
         </Avatar>
         <div className="flex-1">
-          <p className="font-semibold">{data.username}</p>
+          <p className="font-semibold">{data?.username}</p>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mt-2">
               <FormField
@@ -94,7 +119,9 @@ export default function ThreadForm({ data }: Props) {
                 )}
               />
 
-              <Button>Post</Button>
+              <Button disabled={form.formState.isSubmitting}>
+                {initialData ? "Update" : "Post"}
+              </Button>
             </form>
           </Form>
         </div>

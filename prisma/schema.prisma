@@ -18,11 +18,14 @@ model User {
   password     String
   bio          String?
   profileImage String?
+  following    String[]
+  followers    String[]
   onboarded    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  posts Post[]
+  posts   Post[]
+  replies Reply[]
 }
 
 model Post {
@@ -33,7 +36,8 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  images Image[]
+  images  Image[]
+  replies Reply[]
 }
 
 model Image {
@@ -41,6 +45,17 @@ model Image {
   postId    String?  @db.ObjectId
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reply {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -15,7 +15,7 @@ export default function ThreadImages({ data }: Props) {
       )}
     >
       {data.map((image) => (
-        <div key={image.url} className="relative flex h-[200px] snap-center">
+        <div key={image.url} className="relative flex h-[250px] snap-center">
           <Image
             src={image.url}
             fill
