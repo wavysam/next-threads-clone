@@ -16,6 +16,7 @@ export default function ProfileInfo({ data }: Props) {
             reThreads.net
           </p>
         </div>
+        <p className="mt-3">{data.bio}</p>
         <p className="text-sm text-gray-500 mt-2">0 followers</p>
       </div>
       <div className="col-span-4 flex justify-end">
