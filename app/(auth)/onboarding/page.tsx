@@ -25,7 +25,7 @@ export default async function Page() {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-800">Profile</h1>
         <p className="text-gray-500 mt-2">Customize your Threads Profile</p>
