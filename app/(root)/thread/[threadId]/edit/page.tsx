@@ -1,4 +1,4 @@
-import { getUserInfo } from "@/actions/get-user-info";
+import { getUserInfo } from "@/actions/user";
 import { getThreadById } from "@/actions/thread";
 import ThreadForm from "@/components/forms/thread-form";
 
@@ -10,7 +10,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const thread = await getThreadById(params.threadId);
-  const user = await getUserInfo();
+  const currentUser = await getUserInfo();
 
   return (
     <div>
@@ -18,7 +18,7 @@ export default async function Page({ params }: Props) {
         Edit Thread
       </h1>
       <div className="mt-6">
-        <ThreadForm data={user} initialData={thread} />
+        <ThreadForm data={currentUser} initialData={thread} />
       </div>
     </div>
   );

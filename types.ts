@@ -39,6 +39,7 @@ export interface Post {
   user: User;
   images: Image[] | any;
   replies: Reply[] | any;
+  likes: [] | any;
   createdAt: Date;
   updatedAt: Date;
 }

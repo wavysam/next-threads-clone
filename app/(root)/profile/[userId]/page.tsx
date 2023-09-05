@@ -1,12 +1,10 @@
 import { redirect } from "next/navigation";
 
-import { getUserInfo } from "@/actions/get-user-info";
 import ProfileButton from "@/components/profile/profile-button";
 import ProfileInfo from "@/components/profile/profile-info";
 import ProfileTabs from "@/components/profile/profile-tabs";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prismadb";
-import { Button } from "@/components/ui/button";
 
 interface Props {
   params: {
@@ -15,7 +13,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const session = await getAuthSession();
+  const currentUser = await getAuthSession();
   const user = await prisma.user.findUnique({
     where: {
       id: params.userId,
@@ -46,13 +44,13 @@ export default async function Page({ params }: Props) {
       <div className="mt-6">
         <ProfileInfo data={user} />
         <ProfileButton
-          sessionId={session?.user.id as string}
+          sessionId={currentUser?.user.id as string}
           userId={params.userId}
           data={user}
         />
         <ProfileTabs
           userThreads={threads}
-          sessionId={session?.user.id as string}
+          sessionId={currentUser?.user.id as string}
         />
       </div>
     </div>

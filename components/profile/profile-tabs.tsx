@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Thread from "../thread";
+import Thread from "../posts/thread";
 import { Post } from "@/types";
 
 interface Props {
@@ -18,12 +18,12 @@ export default function ProfileTabs({ userThreads, sessionId }: Props) {
           >
             Threads
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             value="replies"
             className="data-[state=active]:border-b data-[state=active]:border-b-gray-900 data-[state=active]:shadow-none rounded-none"
           >
             Replies
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
         <TabsContent value="threads">
           <div className="mt-3">

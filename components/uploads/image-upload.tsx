@@ -1,7 +1,7 @@
 "use client";
 
 import { CldUploadButton } from "next-cloudinary";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
 interface Props {
   // value: string;

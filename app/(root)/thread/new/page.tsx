@@ -1,11 +1,11 @@
-import { getUserInfo } from "@/actions/get-user-info";
+import { getUserInfo } from "@/actions/user";
 import ThreadForm from "@/components/forms/thread-form";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const user = await getUserInfo();
+  const currentUser = await getUserInfo();
 
-  if (!user?.onboarded) {
+  if (!currentUser?.onboarded) {
     redirect("/onboarding");
   }
   return (
@@ -14,7 +14,7 @@ export default async function Page() {
         New Thread
       </h1>
       <div className="mt-6">
-        <ThreadForm data={user} />
+        <ThreadForm data={currentUser} />
       </div>
     </div>
   );

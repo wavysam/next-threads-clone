@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-hot-toast";
 
 const schema = z.object({
   email: z
@@ -39,25 +40,29 @@ export default function LoginForm() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    setLoading(true);
-    try {
-      const res = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof schema>) => {
+      setLoading(true);
+      try {
+        const res = await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+        });
 
-      if (res?.ok && !res?.error) {
-        router.push("/onboarding");
-        router.refresh();
+        if (res?.ok && !res?.error) {
+          router.push("/onboarding");
+          router.refresh();
+          toast.success("Login successfully.");
+        }
+      } catch (error) {
+        toast.error("Failed to login.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [router]
+  );
   return (
     <>
       <Form {...form}>

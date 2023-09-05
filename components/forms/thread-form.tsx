@@ -1,17 +1,19 @@
 "use client";
 
+import { useCallback } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import ThreadImageUpload from "../thread-image-upload";
-import { useRouter } from "next/navigation";
+import ThreadImageUpload from "../uploads/thread-image-upload";
 import { Post } from "@/types";
+import { toast } from "react-hot-toast";
 
 interface Props {
   data: User | null;
@@ -34,37 +36,42 @@ export default function ThreadForm({ data, initialData }: Props) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    if (initialData) {
-      try {
-        const res = await fetch(`/api/thread/${initialData.id}`, {
-          method: "PATCH",
-          body: JSON.stringify(values),
-        });
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof schema>) => {
+      if (initialData) {
+        try {
+          const res = await fetch(`/api/thread/${initialData.id}`, {
+            method: "PATCH",
+            body: JSON.stringify(values),
+          });
 
-        if (res.ok) {
-          router.push("/");
-          router.refresh();
+          if (res.ok) {
+            router.push("/");
+            router.refresh();
+            toast.success("Thread updated.");
+          }
+        } catch (error) {
+          toast.error("Failed to update thread.");
         }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      try {
-        const res = await fetch("/api/thread", {
-          method: "POST",
-          body: JSON.stringify(values),
-        });
+      } else {
+        try {
+          const res = await fetch("/api/thread", {
+            method: "POST",
+            body: JSON.stringify(values),
+          });
 
-        if (res.ok) {
-          router.push("/");
-          router.refresh();
+          if (res.ok) {
+            router.push("/");
+            router.refresh();
+            toast.success("Thread created.");
+          }
+        } catch (error) {
+          toast.error("Failed to create thread.");
         }
-      } catch (error) {
-        console.log(error);
       }
-    }
-  };
+    },
+    [initialData, router]
+  );
 
   return (
     <div>

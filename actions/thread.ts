@@ -9,9 +9,32 @@ export const getThreadById = async (id: string): Promise<Post | null> => {
     include: {
       user: true,
       images: true,
-      replies: true,
+      replies: {
+        include: {
+          user: true,
+          post: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 
   return thread;
+};
+
+export const getAllThreads = async (): Promise<Post[]> => {
+  const threads = await prisma.post.findMany({
+    include: {
+      user: true,
+      images: true,
+      replies: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return threads;
 };

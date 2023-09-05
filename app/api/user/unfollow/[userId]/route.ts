@@ -8,6 +8,7 @@ export async function PATCH(
 ) {
   const { userId } = params;
   const session = await getAuthSession();
+
   try {
     const currentUser = await prisma.user.findUnique({
       where: {
@@ -15,8 +16,8 @@ export async function PATCH(
       },
     });
 
-    const currentUserFollowing = currentUser?.following.filter(
-      (item: string) => item !== userId
+    const updatedCurrentUserFollowing = currentUser?.following.filter(
+      (id: string) => id !== userId
     );
 
     const followingUser = await prisma.user.findUnique({
@@ -25,8 +26,8 @@ export async function PATCH(
       },
     });
 
-    const followingUserFollowers = followingUser?.followers.filter(
-      (item: string) => item !== currentUser?.id
+    const updatedFollowingUserFollowers = followingUser?.followers.filter(
+      (id: string) => id !== currentUser?.id
     );
 
     await prisma.user.update({
@@ -34,7 +35,7 @@ export async function PATCH(
         id: currentUser?.id,
       },
       data: {
-        following: currentUserFollowing,
+        following: updatedCurrentUserFollowing,
       },
     });
 
@@ -43,12 +44,12 @@ export async function PATCH(
         id: userId,
       },
       data: {
-        followers: followingUserFollowers,
+        followers: updatedFollowingUserFollowers,
       },
     });
 
-    return NextResponse.json("Unfollow successfully", { status: 200 });
+    return NextResponse.json("Unfollow Successfully", { status: 200 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

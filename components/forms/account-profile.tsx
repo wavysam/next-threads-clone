@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,9 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import ImageUpload from "../image-upload";
+import ImageUpload from "../uploads/image-upload";
+import { toast } from "react-hot-toast";
 
 interface Props {
+  isOnboarding?: boolean;
   data: {
     id: string;
     name: string;
@@ -38,7 +40,7 @@ const schema = z.object({
   profileImage: z.string().url().nonempty(),
 });
 
-export default function AccountProfile({ data }: Props) {
+export default function AccountProfile({ isOnboarding, data }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -52,26 +54,31 @@ export default function AccountProfile({ data }: Props) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/user", {
-        method: "PATCH",
-        body: JSON.stringify({
-          id: data.id,
-          name: values.name,
-          username: values.username,
-          bio: values.bio,
-          profileImage: values.profileImage,
-        }),
-      });
-      if (res.ok) {
-        router.push("/");
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof schema>) => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/auth/user", {
+          method: "PATCH",
+          body: JSON.stringify({
+            id: data.id,
+            name: values.name,
+            username: values.username,
+            bio: values.bio,
+            profileImage: values.profileImage,
+          }),
+        });
+        if (res.ok) {
+          isOnboarding ? router.push("/") : router.push(`/profile/${data.id}`);
+          !isOnboarding && toast.success("Profile updated.");
+          router.refresh();
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [data.id, router, isOnboarding]
+  );
   return (
     <>
       <Form {...form}>
@@ -138,7 +145,9 @@ export default function AccountProfile({ data }: Props) {
               </FormItem>
             )}
           />
-          <Button disabled={loading}>Continue</Button>
+          <Button disabled={loading}>
+            {isOnboarding ? "Continue" : "Save"}
+          </Button>
         </form>
       </Form>
     </>

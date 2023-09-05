@@ -55,7 +55,7 @@ export async function PATCH(
 
     return NextResponse.json(updateThread, { status: 200 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }
 
@@ -65,12 +65,14 @@ export async function DELETE(
 ) {
   const { threadId } = params;
   try {
-    const post = await prisma.post.delete({
+    await prisma.post.delete({
       where: {
         id: threadId,
       },
     });
+
+    return NextResponse.json("Thread deleted", { status: 200 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

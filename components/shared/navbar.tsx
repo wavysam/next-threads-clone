@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ export default function Navbar() {
   const router = useRouter();
 
   return (
-    <nav className="sticky top-0 w-full z-50 bg-white/60">
+    <nav className="sticky top-0 w-full z-30 bg-white/60">
       <div className="h-14 flex items-center justify-center relative backdrop-blur-lg">
         <div onClick={() => router.push("/")} className="cursor-pointer">
           <Image

@@ -42,7 +42,6 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

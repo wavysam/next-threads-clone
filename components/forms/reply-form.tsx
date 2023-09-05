@@ -9,6 +9,7 @@ import { Textarea } from "../ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface Props {
   profileImage: string;
@@ -49,9 +50,10 @@ export default function ReplyForm({
       if (res.ok) {
         form.reset();
         router.refresh();
+        toast.success("Reply posted.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to add reply.");
     }
   };
 
@@ -63,7 +65,7 @@ export default function ReplyForm({
           control={form.control}
           render={({ field }) => (
             <FormItem className="flex items-start gap-2">
-              <Avatar className="h-14 w-14">
+              <Avatar className="h-12 w-12">
                 <AvatarImage
                   src={profileImage as string}
                   className="object-cover object-center"
@@ -73,7 +75,6 @@ export default function ReplyForm({
               <FormControl>
                 <Textarea
                   {...field}
-                  rows={5}
                   placeholder={`Reply to ${username}...`}
                   className="focus-visible:ring-0 focus-visible:ring-offset-0"
                 />

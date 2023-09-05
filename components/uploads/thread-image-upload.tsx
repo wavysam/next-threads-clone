@@ -3,7 +3,7 @@
 import { CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
 
-import { ImAttachment } from "react-icons/im";
+import { IoImageOutline } from "react-icons/io5";
 import { BiX } from "react-icons/bi";
 
 interface Props {
@@ -49,8 +49,8 @@ export default function ThreadImageUpload({
           uploadPreset="mqira8bg"
           className="p-2 hover:bg-gray-100 rounded-full transition flex items-center space-x-2"
         >
-          <ImAttachment />
-          <p>Add attachment</p>
+          <IoImageOutline size={24} />
+          <p>Add image</p>
         </CldUploadButton>
       </div>
     </div>

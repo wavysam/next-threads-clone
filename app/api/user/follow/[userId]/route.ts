@@ -10,16 +10,19 @@ export async function PATCH(
   const session = await getAuthSession();
 
   try {
-    await prisma.user.update({
+    const currentUser = await prisma.user.findUnique({
       where: {
         id: session?.user.id,
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: currentUser?.id,
       },
       data: {
         following: {
           push: userId,
-        },
-        followers: {
-          push: [],
         },
       },
     });
@@ -30,16 +33,13 @@ export async function PATCH(
       },
       data: {
         followers: {
-          push: session?.user.id,
-        },
-        following: {
-          push: [],
+          push: currentUser?.id,
         },
       },
     });
 
-    return NextResponse.json("Followed successfully", { status: 200 });
+    return NextResponse.json("Followed Successfully", { status: 200 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

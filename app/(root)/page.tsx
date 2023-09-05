@@ -1,19 +1,15 @@
-import Thread from "@/components/thread";
+import { getAllThreads } from "@/actions/thread";
+import Thread from "@/components/posts/thread";
 import { getAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/prismadb";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getAuthSession();
-  const threads = await prisma.post.findMany({
-    include: {
-      user: true,
-      images: true,
-      replies: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const threads = await getAllThreads();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
 
   return (
     <div>

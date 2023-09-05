@@ -19,6 +19,6 @@ export async function PATCH(request: Request) {
     });
     return NextResponse.json(user, { status: 200 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

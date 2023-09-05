@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
+import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
@@ -17,7 +18,7 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const follow = async () => {
+  const follow = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/user/follow/${userId}`, {
@@ -26,15 +27,16 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
 
       if (res.ok) {
         router.refresh();
+        toast.success("Follow successfully.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to follow user");
     } finally {
       setLoading(false);
     }
-  };
+  }, [router, userId]);
 
-  const unFollow = async () => {
+  const unFollow = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/user/unfollow/${userId}`, {
@@ -43,23 +45,39 @@ export default function ProfileButton({ sessionId, userId, data }: Props) {
 
       if (res.ok) {
         router.refresh();
+        toast.success("Unfollow successfully.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to unfollow user");
     } finally {
       setLoading(false);
     }
+  }, [router, userId]);
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Copied.");
   };
 
   return (
     <div className="my-8">
       {sessionId === userId ? (
         <div className="flex justify-between space-x-4">
-          <Button variant="outline" size="sm" className="w-full">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => router.push(`/profile/${data.id}/edit`)}
+          >
             Edit Profile
           </Button>
-          <Button variant="outline" size="sm" className="w-full">
-            Share Profile
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={onCopy}
+          >
+            Copy Profile Link
           </Button>
         </div>
       ) : data.followers?.includes(sessionId) ? (

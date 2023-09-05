@@ -3,7 +3,7 @@ import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prismadb";
 import { redirect } from "next/navigation";
 
-export default async function Page() {
+const Page = async () => {
   const session = await getAuthSession();
 
   const userInfo = await prisma.user.findUnique({
@@ -20,8 +20,8 @@ export default async function Page() {
     profileImage: userInfo?.profileImage || "",
   };
 
-  if (userInfo?.onboarded) {
-    redirect("/");
+  if (!userInfo?.onboarded) {
+    redirect("/onboarding");
   }
 
   return (
@@ -31,8 +31,10 @@ export default async function Page() {
         <p className="text-gray-500 mt-2">Customize your Threads Profile</p>
       </div>
       <div className="mt-10">
-        <AccountProfile data={userData} isOnboarding />
+        <AccountProfile data={userData} />
       </div>
     </div>
   );
-}
+};
+
+export default Page;

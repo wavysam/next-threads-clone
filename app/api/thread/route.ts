@@ -32,6 +32,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newThread, { status: 201 });
   } catch (error: any) {
-    throw new Error(error.message);
+    return new NextResponse(error.message, { status: 500 });
   }
 }

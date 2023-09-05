@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-hot-toast";
 
 const schema = z
   .object({
@@ -52,29 +53,33 @@ export default function RegisterForm() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify(values),
-      });
-
-      if (res.ok) {
-        await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          redirect: false,
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof schema>) => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify(values),
         });
-        router.refresh();
-        router.push("/onboarding");
+
+        if (res.ok) {
+          await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            redirect: false,
+          });
+          router.refresh();
+          router.push("/onboarding");
+          toast.success("Register successfully.");
+        }
+      } catch (error) {
+        toast.error("Failed to register.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [router]
+  );
   return (
     <>
       <Form {...form}>
