@@ -88,11 +88,11 @@ export default function Thread({ data, sessionId }: Props) {
                 {LikeIcon}
               </div>
 
-              <Link href={`/thread/${data.id}`}>
+              <div onClick={() => router.push(`/thread/${data.id}`)}>
                 <div className="cursor-pointer hover:bg-gray-100 p-1.5 rounded-full transition">
                   <AiOutlineMessage size={24} />
                 </div>
-              </Link>
+              </div>
             </div>
             <div className="flex space-x-3 text-gray-500 text-sm mt-1">
               <p className={`${data.likes.length === 0 && "hidden"}`}>
